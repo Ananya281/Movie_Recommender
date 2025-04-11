@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -6,6 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 const YourFavoriteMovies = ({ userId }) => {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const settings = {
     dots: false,
@@ -48,7 +50,10 @@ const YourFavoriteMovies = ({ userId }) => {
         <Slider {...settings}>
           {favorites.map((movie, idx) => (
             <div key={idx} className="px-2">
-              <div className="bg-gray-800 rounded-md overflow-hidden shadow-md hover:scale-105 transition duration-300">
+              <div
+                onClick={() => navigate(`/movie/${encodeURIComponent(movie.title)}`)}
+                className="cursor-pointer bg-gray-800 rounded-md overflow-hidden shadow-md hover:scale-105 transition duration-300"
+              >
                 <img src={movie.image} alt={movie.title} className="w-full h-64 object-cover" />
                 <div className="p-2">
                   <p className="font-semibold text-sm truncate text-white">{movie.title}</p>

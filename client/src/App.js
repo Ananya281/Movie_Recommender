@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import Watchlist from "./pages/Watchlist";
 import Logout from "./pages/Logout";
 import Categories from './pages/Categories'; // ✅
+import MovieDetail from './pages/MovieDetail';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
 <Route path="/watchlist" element={<Watchlist />} />
 <Route path="/categories" element={<Categories />} /> // ✅
+<Route path="/movie/:title" element={<MovieDetail />} />
 <Route path="/logout" element={<Logout />} />
 
         <Route path="*" element={<NotFound />} />

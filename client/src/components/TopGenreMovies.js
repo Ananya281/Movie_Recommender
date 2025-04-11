@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
+import { Link } from 'react-router-dom';
 
 const genres = ['Action', 'Comedy', 'Romance', 'Thriller'];
 
@@ -56,22 +57,25 @@ const TopGenreMovies = () => {
         <div key={genre}>
           <h2 className="text-2xl font-bold mb-4 text-white">Top {genre} Movies</h2>
           <Slider {...settings}>
-            {(moviesByGenre[genre] || []).map((movie, idx) => (
-              <div key={idx} className="px-2">
-                <div className="bg-gray-800 rounded-md overflow-hidden shadow-md hover:scale-105 transition duration-300">
-                  <img
-                    src={movie.image}
-                    alt={movie.title}
-                    className="w-full h-64 object-cover"
-                  />
-                  <div className="p-2">
-                    <p className="font-semibold text-sm truncate text-white">{movie.title}</p>
-                    <p className="text-xs text-gray-400">IMDb Rating: {movie.rating}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </Slider>
+  {(moviesByGenre[genre] || []).map((movie, idx) => (
+    <div key={idx} className="px-2">
+      <Link to={`/movie/${encodeURIComponent(movie.title)}`}>
+        <div className="bg-gray-800 rounded-md overflow-hidden shadow-md hover:scale-105 transition duration-300">
+          <img
+            src={movie.image}
+            alt={movie.title}
+            className="w-full h-64 object-cover"
+          />
+          <div className="p-2">
+            <p className="font-semibold text-sm truncate text-white">{movie.title}</p>
+            <p className="text-xs text-gray-400">IMDb Rating: {movie.rating}</p>
+          </div>
+        </div>
+      </Link>
+    </div>
+  ))}
+</Slider>
+
         </div>
       ))}
     </div>
