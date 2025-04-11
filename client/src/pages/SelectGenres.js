@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const genresList = [
-  'Action', 'Drama', 'Adventure', 'Biography',
-  'Comedy', 'Crime', 'Family', 'Horror',
-  'Mystery', 'Musical', 'Romance', 'Thriller'
-];
-
+    'Action', 'Adventure', 'Biography', 'Comedy', 
+    'Crime', 'Drama', 'Family', 'Horror',
+    'Musical', 'Mystery', 'Romance', 'Thriller'
+  ];
+  
 const SelectGenres = () => {
   const [selectedGenres, setSelectedGenres] = useState([]);
   const navigate = useNavigate();

@@ -1,17 +1,21 @@
 import React from 'react';
+import Sidebar from '../components/Sidebar';
+import HeroDashboard from '../components/HeroDashboard';
+import TopGenreMovies from '../components/TopGenreMovies';
 
 const Dashboard = () => {
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8 border">
-      <h1 className="text-3xl font-bold mb-6">🎬 Welcome to your Dashboard</h1>
+    <div className="relative flex bg-black text-white">
+      {/* Sidebar is fixed, so we offset the main content */}
+      <Sidebar />
 
-      <p className="text-lg">
-        Your favorite movies will appear here soon based on your selected genres and actors.
-      </p>
-
-      <p className="mt-4 text-sm text-gray-400">
-        (You can now implement content-based movie recommendations!)
-      </p>
+      {/* Main Content */}
+      <div className="flex-1 pl-14 md:pl-16 pr-4 pt-6 overflow-y-auto min-h-screen">
+        <HeroDashboard />
+        <div className="py-10">
+          <TopGenreMovies />
+        </div>
+      </div>
     </div>
   );
 };

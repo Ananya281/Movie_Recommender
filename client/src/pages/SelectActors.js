@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const actorsList = [
-  'Aamir Khan', 'Deepika Padukone', 'Amitabh Bachchan', 'Ajay Devgn',
-  'Kajol', 'Anil Kapoor', 'Madhuri Dixit', 'Priyanka Chopra',
-  'Salman Khan', 'Dharmendra', 'Hema Malini', 'Akshay Kumar'
-];
+    'Ajay Devgn', 'Akshay Kumar', 'Amitabh Bachchan', 'Anil Kapoor',
+    'Anushka Sharma', 'Ayushmann Khurrana', 'Hema Malini', 'Kajol',
+    'Kriti Sanon', 'Priyanka Chopra', 'Rishi Kapoor', 'Vicky Kaushal'
+  ];
 
 const SelectActors = () => {
   const [selectedActors, setSelectedActors] = useState([]);
