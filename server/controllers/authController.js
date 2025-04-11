@@ -46,16 +46,17 @@ exports.login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '2h' }
     );
-
     res.json({
-      message: "Login successful",
-      token,
-      user: {
-        id: user._id,
-        email: user.email,
-        fullName: user.fullName
-      }
-    });
+        message: "Login successful",
+        token,
+        user: {
+          id: user._id,
+          email: user.email,
+          fullName: user.fullName,
+          favoriteGenres: user.favoriteGenres || [],
+          favoriteActors: user.favoriteActors || []
+        }
+      });
   } catch (error) {
     res.status(500).json({ message: "Login failed", error: error.message });
   }

@@ -44,7 +44,7 @@ const Sidebar = () => {
 
       {/* Bottom: Logout Button */}
       <div className="flex flex-col items-center group-hover:items-start px-3 gap-6">
-        <Link to="/logout" className="flex items-center gap-3 hover:text-red-400 transition text-sm w-full">
+        <Link to="/" className="flex items-center gap-3 hover:text-red-400 transition text-sm w-full">
           <FaSignOutAlt />
           <span className="hidden group-hover:inline">Logout</span>
         </Link>

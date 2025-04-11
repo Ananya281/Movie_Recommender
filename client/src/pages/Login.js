@@ -19,19 +19,26 @@ const Login = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
-
+  
     try {
       const res = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
+  
       const data = await res.json();
-
+  
       if (res.ok) {
         setSuccess('Login successful!');
+  
+        // Store token and user preferences
         localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.user.id);
+        localStorage.setItem('userEmail', data.user.email);
+        localStorage.setItem('favoriteGenres', JSON.stringify(data.user.favoriteGenres || []));
+        localStorage.setItem('favoriteActors', JSON.stringify(data.user.favoriteActors || []));
+  
         setTimeout(() => {
           navigate('/dashboard');
         }, 1000);
@@ -41,7 +48,7 @@ const Login = () => {
     } catch (err) {
       setError('Failed to connect to server');
     }
-  };
+  };  
 
   return (
     <div
