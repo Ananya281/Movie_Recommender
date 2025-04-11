@@ -20,6 +20,12 @@ app.use(cors({
 // ✅ Middleware
 app.use(express.json());
 
+
+// ✅ Define root route to test deployment
+app.get('/', (req, res) => {
+  res.send('🎬 Movie Recommender API is running!');
+});
+
 // ✅ Auth Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 
