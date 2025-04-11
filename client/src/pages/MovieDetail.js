@@ -13,7 +13,7 @@ const MovieDetail = () => {
   useEffect(() => {
     const fetchMovieDetail = async () => {
       try {
-        const res = await fetch('http://localhost:5001/api/movie-detail', {
+        const res = await fetch(`${process.env.REACT_APP_FLASK_API}/api/movie-detail`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title: decodedTitle }),

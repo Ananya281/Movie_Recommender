@@ -21,7 +21,7 @@ const Login = () => {
     setSuccess('');
   
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(`${process.env.REACT_APP_NODE_API}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

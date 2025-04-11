@@ -24,7 +24,7 @@ const SelectActors = () => {
     const genres = JSON.parse(localStorage.getItem('preferredGenres') || '[]');
   
     try {
-      const res = await fetch('http://localhost:5000/api/auth/preferences', {
+      const res = await fetch(`${process.env.REACT_APP_NODE_API}/auth/preferences`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

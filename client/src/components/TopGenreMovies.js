@@ -35,7 +35,7 @@ const TopGenreMovies = () => {
       const newData = {};
       for (const genre of genres) {
         try {
-          const res = await fetch(`http://localhost:5001/api/top/${genre.toLowerCase()}`);
+          const res = await fetch(`${process.env.REACT_APP_FLASK_API}/top/${genre.toLowerCase()}`);
           const data = await res.json();
           newData[genre] = Array.isArray(data) && data.length > 0 ? data : [fallbackMovie];
         } catch (err) {

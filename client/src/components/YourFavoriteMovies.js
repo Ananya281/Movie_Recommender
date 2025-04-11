@@ -26,7 +26,7 @@ const YourFavoriteMovies = ({ userId }) => {
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const res = await fetch(`http://localhost:5001/api/favorites/${userId}`);
+        const res = await fetch(`${process.env.REACT_APP_FLASK_API}/favorites/${userId}`);
         const data = await res.json();
         setFavorites(data);
       } catch (err) {
