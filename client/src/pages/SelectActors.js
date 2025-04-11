@@ -22,30 +22,31 @@ const SelectActors = () => {
   const handleSavePreferences = async (actors) => {
     const userId = localStorage.getItem('userId');
     const genres = JSON.parse(localStorage.getItem('preferredGenres') || '[]');
-
+  
     try {
       const res = await fetch('http://localhost:5000/api/auth/preferences', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId,
           favoriteGenres: genres,
           favoriteActors: actors
-        })
+        }),
       });
-
+  
       const data = await res.json();
       if (!res.ok) {
-        console.error('Error saving preferences:', data.message);
+        console.error('Error:', data.message);
       }
-    } catch (err) {
-      console.error('Failed to save preferences:', err.message);
+  
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Request failed:', error.message);
+      navigate('/dashboard');
     }
-
-    navigate('/dashboard');
   };
+  
+  
 
   return (
     <div className="min-h-screen bg-black text-white p-8">

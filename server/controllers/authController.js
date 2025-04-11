@@ -62,15 +62,20 @@ exports.login = async (req, res) => {
 };
 
 //Select Genres and Actors Controllers
+
 exports.updatePreferences = async (req, res) => {
     try {
       const { userId, favoriteGenres, favoriteActors } = req.body;
   
+      if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+      }
+  
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         {
-          favoriteGenres,
-          favoriteActors
+          favoriteGenres: favoriteGenres || [],
+          favoriteActors: favoriteActors || []
         },
         { new: true }
       );
@@ -79,8 +84,11 @@ exports.updatePreferences = async (req, res) => {
         return res.status(404).json({ message: 'User not found' });
       }
   
-      res.json({ message: 'Preferences saved successfully', user: updatedUser });
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to update preferences', error: error.message });
+      res.status(200).json({ message: 'Preferences saved', user: updatedUser });
+    } catch (err) {
+      console.error('Update error:', err.message);
+      res.status(500).json({ message: 'Failed to update preferences' });
     }
   };
+  
+  
