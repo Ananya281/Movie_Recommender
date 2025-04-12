@@ -9,8 +9,9 @@ import SelectActors from "./pages/SelectActors";
 import Profile from "./pages/Profile";
 import Watchlist from "./pages/Watchlist";
 import Logout from "./pages/Logout";
-import Categories from './pages/Categories'; // ✅
-import MovieDetail from './pages/MovieDetail';
+import Categories from "./pages/Categories";
+import MovieDetail from "./pages/MovieDetail";
+import About from "./pages/AboutPage"; // ✅ NEW
 
 function App() {
   return (
@@ -23,11 +24,11 @@ function App() {
         <Route path="/select-actors" element={<SelectActors />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
-<Route path="/watchlist" element={<Watchlist />} />
-<Route path="/categories" element={<Categories />} /> // ✅
-<Route path="/movie/:title" element={<MovieDetail />} />
-<Route path="/logout" element={<Logout />} />
-
+        <Route path="/watchlist" element={<Watchlist />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/movie/:title" element={<MovieDetail />} />
+        <Route path="/about" element={<About />} /> {/* ✅ NEW */}
+        <Route path="/logout" element={<Logout />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

@@ -27,7 +27,7 @@ const Sidebar = () => {
       {/* 🧭 Navigation */}
       <div className="flex flex-col items-center group-hover:items-start px-3 mt-10 gap-6">
         <SidebarLink to="/" icon={<FaHome />} label="Home" />
-        <SidebarLink to="/profile" icon={<FaUser />} label="About" />
+        <SidebarLink to="/about" icon={<FaUser />} label="About" />
         <SidebarLink to="/categories" icon={<FaThLarge />} label="Categories" />
       </div>
 
