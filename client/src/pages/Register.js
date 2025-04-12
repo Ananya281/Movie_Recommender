@@ -36,8 +36,8 @@ const Register = () => {
         setSuccess('Registration successful!');
         localStorage.setItem('userId', data.userId); // Save userId
         setTimeout(() => {
-          navigate('/select-genres'); // ✅ Go to genre step
-        }, 1000);
+          navigate('/select-genres');
+        }, 1000);        
       } else {
         setError(data.message || 'Something went wrong');
       }

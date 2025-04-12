@@ -13,7 +13,7 @@ const app = express();
 
 // ✅ CORS setup (adjust the origin for production)
 app.use(cors({
-  origin: 'http://localhost:3000', // React frontend URL
+  origin: ['http://localhost:3000', 'https://movie-recommender-2823.vercel.app'],
   credentials: true
 }));
 

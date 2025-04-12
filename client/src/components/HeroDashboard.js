@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import background from '../assets/images/bg.jpeg';
 
 const HeroDashboard = () => {
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = async () => {
+    if (!query.trim()) return;
+    setLoading(true);
     try {
-      const res = await fetch(`${process.env.REACT_APP_FLASK_API}/api/search`, {
+      const res = await fetch(`${process.env.REACT_APP_FLASK_API}/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query })
@@ -17,6 +21,8 @@ const HeroDashboard = () => {
       setSearchResults(data);
     } catch (error) {
       console.error('Search error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,28 +55,35 @@ const HeroDashboard = () => {
           </button>
         </div>
 
-        {searchResults.length > 0 && (
-  <div className="w-full flex justify-center mt-10">
-    <div className="flex gap-4 flex-wrap justify-center max-w-7xl px-4">
-      {searchResults.map((movie, idx) => (
-        <div
-          key={idx}
-          className="w-[180px] bg-gray-900 rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition duration-300"
-        >
-          <img
-            src={movie.image}
-            alt={movie.title}
-            className="w-full h-64 object-cover"
-          />
-          <div className="p-3 text-left">
-            <h3 className="font-semibold text-sm truncate">{movie.title}</h3>
-            <p className="text-xs text-gray-400">IMDb Rating: {movie.rating}</p>
+        {loading && <p className="text-white mt-4">Searching...</p>}
+
+        {!loading && searchResults.length === 0 && query && (
+          <p className="text-white mt-4">No movies found.</p>
+        )}
+
+        {!loading && searchResults.length > 0 && (
+          <div className="w-full flex justify-center mt-10">
+            <div className="flex gap-4 flex-wrap justify-center max-w-7xl px-4">
+              {searchResults.map((movie, idx) => (
+                <Link
+                  to={`/movie/${encodeURIComponent(movie.title)}`}
+                  key={idx}
+                  className="w-[180px] bg-gray-900 rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition duration-300"
+                >
+                  <img
+                    src={movie.image}
+                    alt={movie.title}
+                    className="w-full h-64 object-cover"
+                  />
+                  <div className="p-3 text-left">
+                    <h3 className="font-semibold text-sm truncate">{movie.title}</h3>
+                    <p className="text-xs text-gray-400">IMDb Rating: {movie.rating}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+        )}
       </div>
     </div>
   );

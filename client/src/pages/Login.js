@@ -10,6 +10,7 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,26 +20,25 @@ const Login = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
-  
+    setLoading(true);
+
     try {
       const res = await fetch(`${process.env.REACT_APP_NODE_API}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-  
+
       const data = await res.json();
-  
+
       if (res.ok) {
         setSuccess('Login successful!');
-  
-        // Store token and user preferences
         localStorage.setItem('token', data.token);
         localStorage.setItem('userId', data.user.id);
         localStorage.setItem('userEmail', data.user.email);
         localStorage.setItem('favoriteGenres', JSON.stringify(data.user.favoriteGenres || []));
         localStorage.setItem('favoriteActors', JSON.stringify(data.user.favoriteActors || []));
-  
+
         setTimeout(() => {
           navigate('/dashboard');
         }, 1000);
@@ -47,8 +47,10 @@ const Login = () => {
       }
     } catch (err) {
       setError('Failed to connect to server');
+    } finally {
+      setLoading(false);
     }
-  };  
+  };
 
   return (
     <div
@@ -81,9 +83,10 @@ const Login = () => {
           />
           <button
             type="submit"
-            className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md transition"
+            disabled={loading}
+            className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md transition disabled:opacity-50"
           >
-            Login
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 

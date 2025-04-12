@@ -15,22 +15,24 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="relative flex bg-black text-white">
+    <div className="relative flex bg-black text-white min-h-screen">
+      {/* Sidebar */}
       <Sidebar />
 
-      <div className="flex-1 pl-14 md:pl-16 pr-4 pt-6 overflow-y-auto min-h-screen">
+      {/* Main Content */}
+      <div className="flex-1 pl-14 md:pl-16 pr-4 pt-6 overflow-y-auto">
         <HeroDashboard />
 
-        {/* Recommended based on user preferences */}
+        {/* Favorite Movies */}
         <div className="py-10 mb-[-70px]">
           {userId ? (
             <YourFavoriteMovies userId={userId} />
           ) : (
-            <p className="text-white px-4">Loading user preferences...</p>
+            <p className="text-white text-center">Loading user preferences...</p>
           )}
         </div>
 
-        {/* Top Genre Recommendations */}
+        {/* Genre-Based Recommendations */}
         <div className="py-10">
           <TopGenreMovies />
         </div>
