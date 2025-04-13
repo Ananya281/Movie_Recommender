@@ -54,23 +54,23 @@ const Login = () => {
 
   return (
     <div
-      className="relative h-screen bg-cover bg-center"
+      className="relative min-h-screen bg-cover bg-center flex items-center justify-center px-4"
       style={{ backgroundImage: `url(${background})` }}
     >
       <div className="absolute inset-0 bg-black bg-opacity-70"></div>
 
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-white px-4">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6">Login</h2>
+      <div className="relative z-10 w-full max-w-md bg-white bg-opacity-10 backdrop-blur-md p-8 rounded-xl shadow-lg text-white">
+        <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-center">Login</h2>
 
-        <form className="w-full max-w-sm space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <input
             type="email"
             name="email"
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-4 py-2 rounded-md text-black focus:outline-none"
             required
+            className="w-full px-4 py-3 rounded-lg bg-white bg-opacity-80 text-black placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500"
           />
           <input
             type="password"
@@ -78,23 +78,23 @@ const Login = () => {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full px-4 py-2 rounded-md text-black focus:outline-none"
             required
+            className="w-full px-4 py-3 rounded-lg bg-white bg-opacity-80 text-black placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500"
           />
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md transition disabled:opacity-50"
+            className="w-full py-3 rounded-lg bg-red-600 hover:bg-red-700 transition duration-300 font-semibold disabled:opacity-50"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
-        {error && <p className="mt-4 text-red-400">{error}</p>}
-        {success && <p className="mt-4 text-green-400">{success}</p>}
+        {error && <p className="mt-4 text-red-400 text-center">{error}</p>}
+        {success && <p className="mt-4 text-green-400 text-center">{success}</p>}
 
-        <p className="mt-6 text-sm text-white">
-          Don't have an account?{' '}
+        <p className="mt-6 text-center text-sm">
+          Don’t have an account?{' '}
           <Link to="/register" className="text-red-400 hover:underline">
             Create an Account
           </Link>

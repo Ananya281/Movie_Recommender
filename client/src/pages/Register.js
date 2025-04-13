@@ -49,59 +49,61 @@ const Register = () => {
 
   return (
     <div
-      className="relative h-screen bg-cover bg-center"
+      className="relative min-h-screen bg-cover bg-center"
       style={{ backgroundImage: `url(${background})` }}
     >
-      <div className="absolute inset-0 bg-black bg-opacity-70"></div>
+      <div className="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-sm"></div>
 
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-white px-4">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6">Register</h2>
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-8">
+        <div className="bg-white bg-opacity-10 p-8 rounded-xl w-full max-w-md text-white shadow-lg backdrop-blur-md">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">Register</h2>
 
-        <form className="w-full max-w-sm space-y-4" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="fullName"
-            placeholder="Fullname"
-            value={formData.fullName}
-            onChange={handleChange}
-            className="w-full px-4 py-2 rounded-md text-black focus:outline-none"
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full px-4 py-2 rounded-md text-black focus:outline-none"
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full px-4 py-2 rounded-md text-black focus:outline-none"
-            required
-          />
-          <button
-            type="submit"
-            className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md transition"
-          >
-            Register
-          </button>
-        </form>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="fullName"
+              placeholder="Full Name"
+              value={formData.fullName}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-red-500"
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-red-500"
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-red-500"
+              required
+            />
+            <button
+              type="submit"
+              className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-md transition duration-200 font-semibold"
+            >
+              Register
+            </button>
+          </form>
 
-        {error && <p className="mt-4 text-red-400">{error}</p>}
-        {success && <p className="mt-4 text-green-400">{success}</p>}
+          {error && <p className="mt-4 text-red-400 text-sm">{error}</p>}
+          {success && <p className="mt-4 text-green-400 text-sm">{success}</p>}
 
-        <p className="mt-6 text-sm text-white">
-          Already have an account?{' '}
-          <Link to="/login" className="text-red-400 hover:underline">
-            Login
-          </Link>
-        </p>
+          <p className="mt-6 text-center text-sm">
+            Already have an account?{' '}
+            <Link to="/login" className="text-red-400 hover:underline">
+              Login
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
