@@ -39,7 +39,7 @@ const Sidebar = () => {
 
       {/* 🚪 Logout */}
       <div className="mt-auto">
-        <SidebarLink to="/logout" icon={<FaSignOutAlt />} label="Logout" />
+        <SidebarLink to="/" icon={<FaSignOutAlt />} label="Logout" />
       </div>
     </div>
   );
