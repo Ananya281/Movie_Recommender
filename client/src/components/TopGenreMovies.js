@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
-import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link } from 'react-router-dom';
 
@@ -57,25 +57,58 @@ const TopGenreMovies = () => {
         <div key={genre}>
           <h2 className="text-2xl font-bold mb-4 text-white">Top {genre} Movies</h2>
           <Slider {...settings}>
-  {(moviesByGenre[genre] || []).map((movie, idx) => (
-    <div key={idx} className="px-2">
-      <Link to={`/movie/${encodeURIComponent(movie.title)}`}>
-        <div className="bg-gray-800 rounded-md overflow-hidden shadow-md hover:scale-105 transition duration-300">
-          <img
-            src={movie.image}
-            alt={movie.title}
-            className="w-full h-64 object-cover"
-          />
-          <div className="p-2">
-            <p className="font-semibold text-sm truncate text-white">{movie.title}</p>
-            <p className="text-xs text-gray-400">IMDb Rating: {movie.rating}</p>
-          </div>
-        </div>
-      </Link>
-    </div>
-  ))}
-</Slider>
+            {(moviesByGenre[genre] || []).map((movie, idx) => (
+              <div key={idx} className="px-2">
+                <Link to={`/movie/${encodeURIComponent(movie.title)}`}>
+                  <div className="group relative rounded-lg overflow-hidden transition-all duration-300 bg-black hover:shadow-xl cursor-pointer">
 
+                    {/* Thumbnail */}
+                    <img
+                      src={movie.image}
+                      alt={movie.title}
+                      className="w-full h-48 object-cover"
+                    />
+
+                    {/* Play Icon */}
+                    <div className="absolute top-2 left-2 z-10 text-white">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+
+                    {/* Duration */}
+                    <div className="absolute bottom-2 right-2 z-10 text-white text-xs font-semibold">
+                      {movie.duration || '30m'}
+                    </div>
+
+                    {/* Title (always visible) */}
+                    <div className="text-white mt-2 text-sm font-semibold truncate px-1">
+                      {movie.title}
+                    </div>
+
+                    {/* Hover Overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out text-white text-sm">
+                      {/* Gradient Background */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
+
+                      {/* Hover Content */}
+                      <div className="relative px-4 py-12 z-10">
+                        <p className="font-semibold text-sm leading-tight mb-1">
+                          {movie.title}
+                        </p>
+                        <p className="text-xs text-gray-300">
+                          {movie.episode || `IMDb: ${movie.rating}`} • {movie.date || '13 Apr'}
+                        </p>
+                        <p className="mt-2 underline text-red-500 text-xs">
+                          View More Details →
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </Slider>
         </div>
       ))}
     </div>

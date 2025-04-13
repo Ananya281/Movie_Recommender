@@ -12,6 +12,7 @@ import Logout from "./pages/Logout";
 import Categories from "./pages/Categories";
 import MovieDetail from "./pages/MovieDetail";
 import About from "./pages/AboutPage"; // ✅ NEW
+import HeroDashboard from "./components/HeroDashboard"; // ✅ ✅ ADDED IMPORT
 
 function App() {
   return (
@@ -23,11 +24,12 @@ function App() {
         <Route path="/select-genres" element={<SelectGenres />} />
         <Route path="/select-actors" element={<SelectActors />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/hero-dashboard" element={<HeroDashboard />} /> {/* ✅ ✅ NEW ROUTE */}
         <Route path="/profile" element={<Profile />} />
         <Route path="/watchlist" element={<Watchlist />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/movie/:title" element={<MovieDetail />} />
-        <Route path="/about" element={<About />} /> {/* ✅ NEW */}
+        <Route path="/about" element={<About />} /> {/* ✅ */}
         <Route path="/logout" element={<Logout />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

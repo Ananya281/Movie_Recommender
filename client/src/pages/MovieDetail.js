@@ -2,20 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../components/Loader';
+import { ArrowLeft, PlayCircle, Info } from 'lucide-react';
 
-// ✅ Your YouTube API Key (hardcoded)
 const YOUTUBE_API_KEY = "AIzaSyDF7STVtzqgx4F2Xi7QEA70IUGSvNGULEo";
 
 const MovieDetail = () => {
   const { title } = useParams();
   const navigate = useNavigate();
   const decodedTitle = decodeURIComponent(title);
+
   const [movie, setMovie] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showTrailer, setShowTrailer] = useState(false);
   const [trailerId, setTrailerId] = useState('');
   const [trailerLoading, setTrailerLoading] = useState(false);
+
+  const handleGoBack = () => {
+    navigate('/dashboard#hero'); // 👈 Scrolls to HeroDashboard on Dashboard
+  };
 
   useEffect(() => {
     const fetchMovieDetail = async () => {
@@ -27,12 +32,8 @@ const MovieDetail = () => {
         });
 
         const data = await res.json();
-        if (res.ok) {
-          setMovie(data);
-        } else {
-          setError(data.error || 'Failed to fetch movie details');
-        }
-      } catch (err) {
+        res.ok ? setMovie(data) : setError(data.error || 'Failed to fetch movie details');
+      } catch {
         setError('Server error while fetching movie');
       } finally {
         setLoading(false);
@@ -66,18 +67,22 @@ const MovieDetail = () => {
     }
   };
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
-      <Loader />
-      <p className="mt-4">Loading movie details...</p>
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
+        <Loader />
+        <p className="mt-4">Loading movie details...</p>
+      </div>
+    );
+  }
 
-  if (error) return (
-    <div className="text-red-500 p-10 text-center bg-black min-h-screen flex items-center justify-center">
-      {error}
-    </div>
-  );
+  if (error) {
+    return (
+      <div className="text-red-500 p-10 text-center bg-black min-h-screen flex items-center justify-center">
+        {error}
+      </div>
+    );
+  }
 
   const wikipediaUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(movie.title)}`;
   const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title + ' trailer')}`;
@@ -87,51 +92,67 @@ const MovieDetail = () => {
       className="min-h-screen bg-cover bg-center relative text-white"
       style={{ backgroundImage: `url(${movie.poster_path})` }}
     >
-      <div className="absolute inset-0 bg-black bg-opacity-70 z-0" />
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90 z-0" />
 
-      <div className="relative z-10 px-4 py-16 flex flex-col items-center justify-center min-h-screen text-center">
-        <div className="max-w-4xl">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">{movie.title}</h1>
-          <p className="text-lg mb-2"><span className="font-semibold">IMDb Rating:</span> {movie.imdb_rating}</p>
-          <p className="text-lg mb-2"><span className="font-semibold">Genres:</span> {movie.genres}</p>
-          <p className="text-lg mb-2"><span className="font-semibold">Actors:</span> {movie.actors}</p>
+      <div className="relative z-10 px-4 py-20 lg:py-28 flex flex-col items-center justify-center min-h-screen text-center">
+        <div className="max-w-3xl mx-auto space-y-6">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">{movie.title}</h1>
 
-          <p className="mt-6 text-md text-gray-300 leading-relaxed max-w-3xl mx-auto">
+          <div className="text-base sm:text-lg text-gray-300 space-y-2">
+            <p><span className="font-semibold text-white">IMDb Rating:</span> {movie.imdb_rating}</p>
+            <p><span className="font-semibold text-white">Genres:</span> {movie.genres}</p>
+            <p><span className="font-semibold text-white">Actors:</span> {movie.actors}</p>
+          </div>
+
+          <p className="text-sm sm:text-base text-gray-400 leading-relaxed max-w-2xl mx-auto">
             <span className="font-semibold text-white">Overview:</span> {movie.story}
           </p>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <div className="mt-6 flex flex-wrap justify-center gap-4">
             <button
               onClick={openTrailerModal}
-              className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-md transition"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-md transition"
             >
-              Watch Trailer
+              <PlayCircle className="w-5 h-5" /> Watch Trailer
             </button>
+
             <a
               href={wikipediaUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-md transition"
+              className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-md transition"
             >
-              More Info
+              <Info className="w-5 h-5" /> More Info
             </a>
+
             <button
-              onClick={() => navigate(-1)}
-              className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-md transition"
+              onClick={handleGoBack}
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-6 py-2 rounded-md transition"
             >
-              Go Back
+              <ArrowLeft className="w-5 h-5" /> Go Back
             </button>
           </div>
         </div>
       </div>
 
-      {/* ✅ Trailer Modal */}
+      {/* 🎬 Trailer Modal */}
       {showTrailer && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center">
-          <div className="bg-[#111] rounded-lg overflow-hidden shadow-lg w-full max-w-3xl mx-4">
-            <div className="p-4 text-white font-bold text-xl border-b border-gray-700">
-              Trailer
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center px-4">
+          <div className="bg-[#111] rounded-lg overflow-hidden shadow-xl w-full max-w-3xl animate-fade-in">
+            <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+              <h2 className="text-lg font-bold text-white">Trailer</h2>
+              <button
+                onClick={() => {
+                  setShowTrailer(false);
+                  setTrailerId('');
+                }}
+                className="text-gray-400 hover:text-white transition text-xl"
+              >
+                ✕
+              </button>
             </div>
+
             <div className="w-full aspect-video bg-black flex items-center justify-center">
               {trailerLoading ? (
                 <p className="text-gray-400">Loading trailer...</p>
@@ -148,26 +169,26 @@ const MovieDetail = () => {
                 <p className="text-gray-400">Trailer not found.</p>
               )}
             </div>
-            <div className="flex justify-between p-4 bg-[#1a1a1a] border-t border-gray-700">
-  <a
-    href={`https://www.youtube.com/watch?v=${trailerId}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white text-sm"
-  >
-    Open in New Tab
-  </a>
-  <button
-    onClick={() => {
-      setShowTrailer(false);
-      setTrailerId('');
-    }}
-    className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-white text-sm"
-  >
-    Close
-  </button>
-</div>
 
+            <div className="flex justify-between items-center p-4 border-t border-gray-700 bg-[#1a1a1a]">
+              <a
+                href={`https://www.youtube.com/watch?v=${trailerId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded"
+              >
+                Open in New Tab
+              </a>
+              <button
+                onClick={() => {
+                  setShowTrailer(false);
+                  setTrailerId('');
+                }}
+                className="text-sm px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

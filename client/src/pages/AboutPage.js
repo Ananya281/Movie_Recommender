@@ -1,43 +1,40 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import bgImage from '../assets/images/bg.jpeg'; // Update path if needed
+import { FaHome } from 'react-icons/fa';
+import bgImage from '../assets/images/bg.jpeg';
 
 const About = () => {
   const navigate = useNavigate();
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center flex items-center justify-center text-white text-center px-6"
+      className="min-h-screen w-full bg-cover bg-center flex items-center justify-center relative px-4 sm:px-8"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
-      <div className="bg-black bg-opacity-60 backdrop-blur-md p-8 rounded-lg max-w-3xl w-full">
-        <h1 className="text-4xl font-bold mb-6">About Us</h1>
+      {/* ✨ Overlay */}
+      <div className="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-0"></div>
 
-        <p className="mb-4 text-lg">
-          Welcome to <strong>Movie Recommender</strong>! Our mission is to help you discover movies
-          that match your taste. We believe that movies have the power to inspire, entertain,
-          and bring people together. Our platform leverages advanced algorithms to provide
-          personalized recommendations tailored to your preferences.
+      {/* ✨ Content Card */}
+      <div className="relative z-10 bg-white/10 border border-white/20 text-white rounded-3xl shadow-2xl p-6 sm:p-10 md:p-14 max-w-5xl w-full transition-all duration-500 backdrop-blur-lg">
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-6 text-center">
+          About <span className="text-red-500">Movie Recommender</span>
+        </h1>
+
+        <p className="text-base sm:text-lg md:text-xl leading-relaxed text-gray-200 mb-4 text-center">
+          🎬 Welcome to <span className="font-semibold text-red-400">Movie Recommender</span> – your personal movie companion! Whether you're into thrillers, rom-coms, or indie gems, we’ll help you find the perfect film for every mood.
         </p>
 
-        <p className="mb-6 text-lg">
-          Whether you are looking for the latest blockbusters or hidden gems, our team is
-          dedicated to enhancing your movie-watching experience. We are a passionate group
-          of movie enthusiasts who are committed to delivering the best service possible.
+        <p className="text-base sm:text-lg md:text-xl leading-relaxed text-gray-200 mb-6 text-center">
+          Powered by smart <span className="font-semibold text-red-400">AI algorithms</span>, our platform learns your preferences and curates movie recommendations just for you. Say goodbye to endless scrolling and hello to unforgettable movie nights 🍿.
         </p>
 
-        <div className="flex flex-wrap justify-center gap-4">
+        {/* ✨ Go to Home Button Only */}
+        <div className="flex justify-center mt-8">
           <button
             onClick={() => navigate('/dashboard')}
-            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md transition"
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full text-sm sm:text-base transition duration-300 shadow-md"
           >
-            Go Home
-          </button>
-          <button
-            onClick={() => navigate('/contact')}
-            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md transition"
-          >
-            Contact Us
+            <FaHome /> Go to Home
           </button>
         </div>
       </div>
