@@ -49,7 +49,7 @@ const HeroDashboard = () => {
         <div className="flex flex-col sm:flex-row gap-3 mb-8 w-full max-w-xl items-center justify-center">
           <input
             type="text"
-            placeholder="Search by actor, movie, or genre..."
+            placeholder="Search by movie..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}

@@ -32,6 +32,10 @@ const genres = [
 const Categories = () => {
   const navigate = useNavigate();
 
+  const handleGenreClick = (genreName) => {
+    navigate(`/top/${genreName.toLowerCase()}`);
+  };
+
   return (
     <div className="min-h-screen bg-black text-white px-6 py-12">
       <div className="flex justify-between items-center mb-10 max-w-6xl mx-auto">
@@ -48,6 +52,7 @@ const Categories = () => {
         {genres.map((genre) => (
           <div
             key={genre.name}
+            onClick={() => handleGenreClick(genre.name)}
             className="relative overflow-hidden rounded-lg shadow-md cursor-pointer group transition duration-300"
           >
             <img
