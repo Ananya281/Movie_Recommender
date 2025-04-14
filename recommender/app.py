@@ -25,11 +25,8 @@ with open('popular.pkl', 'rb') as f:
 with open('movienew.pkl', 'rb') as f:
     movienew = pickle.load(f)
 
-try:
-    with open('similarity.pkl', 'rb') as f:
-        similarity = pickle.load(f)
-except:
-    similarity = None
+with open('similarity.pkl', 'rb') as f:
+    similarity = pickle.load(f)
 
 # ===========================
 # Movie Detail API
@@ -64,17 +61,34 @@ def get_movie_wiki(popular, title):
 def movie_detail():
     try:
         data = request.get_json()
-        title = data.get('title')
+        title = data.get('title', '').strip().lower()
         if not title:
             return jsonify({"error": "Title is required"}), 400
-        movie_info = get_movie_info(popular, title)
-        if not movie_info:
+
+        # Normalize and match title (case-insensitive)
+        safe_title = re.escape(title)
+        matched_movie = popular[popular['title'].str.lower().str.contains(safe_title, na=False, regex=True)]
+
+        if matched_movie.empty:
             return jsonify({"error": "Movie not found"}), 404
-        story = get_movie_wiki(popular, movie_info['title']) or "No story available"
-        movie_info["story"] = story
-        return jsonify(movie_info)
+
+        movie_data = matched_movie.iloc[0]
+        story = movie_data.get("story", "") or get_movie_wiki(popular, movie_data['title']) or "No story available"
+
+        return jsonify({
+            "title": movie_data["title"],
+            "imdb_rating": movie_data["imdb_rating"],
+            "poster_path": movie_data["poster_path"],
+            "genres": movie_data["genres"],
+            "summary": movie_data["summary"],
+            "actors": movie_data["actors"],
+            "story": story
+        })
+
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print("❌ Error in /api/movie-detail:", str(e))
+        return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
+
 
 # ===========================
 # Recommendation Function
@@ -156,14 +170,22 @@ def top_thriller():
 
 @app.route('/api/search', methods=['POST'])
 def search_movies():
-    data = request.get_json()
-    query = data.get("query", "").strip().lower()
-    if not query:
-        return jsonify([])
-    recommendations = combined_movie_recommendation(query)
-    return jsonify([
-        {"title": r[0][0], "rating": r[1][0], "image": r[2][0]} for r in recommendations
-    ])
+    try:
+        data = request.get_json()
+        query = data.get("query", "").strip().lower()
+        print("🔥 SEARCH ROUTE TRIGGERED with query:", query)
+
+        recommendations = recommend_based_movie(query)
+
+        print("✅ Recommendation count:", len(recommendations))
+        return jsonify([
+            {"title": r[0][0], "rating": r[1][0], "image": r[2][0]}
+            for r in recommendations
+        ])
+    except Exception as e:
+        print("❌ ERROR in /api/search:", str(e))
+        return jsonify({"error": "Server error", "details": str(e)}), 500
+
 
 def recommend_based_actor(actor_name):
     actor_name = actor_name.replace(" ", "").lower()
@@ -176,28 +198,50 @@ def recommend_based_genre(genre_name):
     matches = movienew[movienew['genres'].str.lower().str.contains(genre_name, na=False)]
     return build_recommendation(matches)
 
-def recommend_based_movie(movie_title):
-    if not similarity:
-        return []
-    query_normalized = movie_title.strip().lower()
-    title_series = movienew['title'].str.lower().str.replace(r'\s*\(.*\)', '', regex=True)
-    movie_matches = movienew[title_series.str.contains(query_normalized, na=False)]
+def recommend_based_movie(query):
+    # Normalize the query
+    query_normalized = query.strip().lower()
+    
+    # Normalize movie titles by removing extra text (e.g., '(film)')
+    movie_titles_normalized = movienew['title'].str.lower().str.replace(r'\s*\(.*\)', '', regex=True)
+    
+    # Find the movies that match the query
+    movie_matches = movienew[movie_titles_normalized.str.contains(query_normalized, na=False)]
+    
+    # If no movies are found, return an empty list
     if movie_matches.empty:
         return []
+    
+    # Create a list to store the recommendations
     recommendations = []
+    
+    # Loop through the matching movies
     for _, row in movie_matches.iterrows():
         try:
-            idx = movienew[title_series == row['title'].lower()].index[0]
-            distances = similarity[idx]
-            movie_list = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[1:6]
-            for i in movie_list:
-                movie_info = movienew.iloc[i[0]]
-                recommendations.append([
-                    [movie_info['title']], [movie_info['imdb_rating']], [movie_info['poster_path']]
-                ])
+            # Find the index of the movie
+            movie_index = movienew[movie_titles_normalized == row['title'].lower()].index[0]
+            
+            # Get similarity distances for that movie
+            distances = similarity[movie_index]
+            
+            # Sort movies based on similarity and pick the top 5 (excluding the movie itself)
+            movies_list = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[1:6]
+            
+            for i in movies_list:
+                movie_info = [
+                    [movienew.iloc[i[0]]['title']],           # Movie title inside a list
+                    [movienew.iloc[i[0]]['imdb_rating']],     # Movie rating inside a list
+                    [movienew.iloc[i[0]]['poster_path']]      # Movie poster inside a list
+                ]
+                recommendations.append(movie_info)
+        
         except IndexError:
+            # Handle case where movie index is not found
             continue
+    
+    # Sort the recommendations by rating in descending order
     recommendations.sort(key=lambda x: x[1], reverse=True)
+    
     return recommendations[:5]
 
 def build_recommendation(df):

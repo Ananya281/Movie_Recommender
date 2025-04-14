@@ -47,7 +47,16 @@ const YourFavoriteMovies = ({ userId }) => {
 
   return (
     <div className="px-4 mt-10">
-      <h2 className="text-2xl font-bold mb-6 text-white">Your Favorite Movies</h2>
+      {/* Title & View All */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-white">Your Favorite Movies</h2>
+        <button
+          onClick={() => navigate('/favorites')}
+          className="text-sm text-blue-400 hover:text-blue-200 transition"
+        >
+          View All →
+        </button>
+      </div>
 
       {favorites.length > 0 ? (
         <Slider {...settings}>
@@ -65,39 +74,18 @@ const YourFavoriteMovies = ({ userId }) => {
                   className="w-full h-48 object-cover"
                 />
 
-                {/* ▶ Play Icon */}
-                <div className="absolute top-2 left-2 z-10 text-white">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-
-                {/* Duration */}
-                <div className="absolute bottom-2 right-2 z-10 text-white text-xs font-semibold">
-                  {movie.duration || '30m'}
-                </div>
-
-                {/* Title below (default view) */}
+                {/* Title below */}
                 <div className="text-white mt-2 text-sm font-semibold truncate px-1">
                   {movie.title}
                 </div>
 
                 {/* Fade-Up Overlay on Hover */}
                 <div className="absolute bottom-0 left-0 right-0 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out text-white text-sm">
-                  {/* Faded background */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
-
-                  {/* Overlay content */}
                   <div className="relative px-4 py-6 z-10">
-                    <p className="font-semibold text-sm leading-tight mb-1">
-                      {movie.title}
-                    </p>
-                    <p className="text-xs text-gray-300">
-                      IMDb: {movie.rating}
-                    </p>
-                    <p className="mt-2 underline text-red-500 text-xs">
-                      View More Details →
-                    </p>
+                    <p className="font-semibold text-sm leading-tight mb-1">{movie.title}</p>
+                    <p className="text-xs text-gray-300">IMDb: {movie.rating}</p>
+                    <p className="mt-2 underline text-red-500 text-xs">View More Details →</p>
                   </div>
                 </div>
               </div>

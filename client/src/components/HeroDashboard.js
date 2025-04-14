@@ -17,8 +17,9 @@ const HeroDashboard = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query })
       });
-
+      
       const data = await res.json();
+      console.log("📦 Search Response:", data); // ✅ Add this
       setSearchResults(data);
     } catch (error) {
       console.error('Search error:', error);

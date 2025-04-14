@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const genres = ['Action', 'Comedy', 'Romance', 'Thriller'];
 
@@ -15,6 +15,7 @@ const fallbackMovie = {
 const TopGenreMovies = () => {
   const [moviesByGenre, setMoviesByGenre] = useState({});
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const settings = {
     dots: false,
@@ -55,43 +56,31 @@ const TopGenreMovies = () => {
     <div className="space-y-14 mt-10 px-4">
       {genres.map((genre) => (
         <div key={genre}>
-          <h2 className="text-2xl font-bold mb-4 text-white">Top {genre} Movies</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-white">Top {genre} Movies</h2>
+            <button
+              onClick={() => navigate(`/top/${genre.toLowerCase()}`)}
+              className="text-sm text-blue-400 hover:text-blue-200 transition"
+            >
+              View All →
+            </button>
+          </div>
+
           <Slider {...settings}>
             {(moviesByGenre[genre] || []).map((movie, idx) => (
               <div key={idx} className="px-2">
                 <Link to={`/movie/${encodeURIComponent(movie.title)}`}>
                   <div className="group relative rounded-lg overflow-hidden transition-all duration-300 bg-black hover:shadow-xl cursor-pointer">
-
-                    {/* Thumbnail */}
                     <img
                       src={movie.image}
                       alt={movie.title}
                       className="w-full h-48 object-cover"
                     />
-
-                    {/* Play Icon */}
-                    <div className="absolute top-2 left-2 z-10 text-white">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
-
-                    {/* Duration */}
-                    <div className="absolute bottom-2 right-2 z-10 text-white text-xs font-semibold">
-                      {movie.duration || '30m'}
-                    </div>
-
-                    {/* Title (always visible) */}
                     <div className="text-white mt-2 text-sm font-semibold truncate px-1">
                       {movie.title}
                     </div>
-
-                    {/* Hover Overlay */}
                     <div className="absolute bottom-0 left-0 right-0 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out text-white text-sm">
-                      {/* Gradient Background */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
-
-                      {/* Hover Content */}
                       <div className="relative px-4 py-12 z-10">
                         <p className="font-semibold text-sm leading-tight mb-1">
                           {movie.title}
