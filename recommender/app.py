@@ -18,6 +18,7 @@ MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client['movie_recommender']
 users_collection = db['users']
+history_collection = db['history']  # ✅ new collection
 
 with open('popular.pkl', 'rb') as f:
     popular = pickle.load(f)
@@ -51,14 +52,18 @@ def movie_detail():
     try:
         data = request.get_json()
         title = data.get('title', '').strip().lower()
+
         if not title:
             return jsonify({"error": "Title is required"}), 400
+
         safe_title = re.escape(title)
         matched_movie = popular[popular['title'].str.lower().str.contains(safe_title, na=False, regex=True)]
         if matched_movie.empty:
             return jsonify({"error": "Movie not found"}), 404
+
         movie_data = matched_movie.iloc[0]
         story = movie_data.get("story", "") or "No story available"
+
         return jsonify({
             "title": movie_data["title"],
             "imdb_rating": movie_data["imdb_rating"],
@@ -68,10 +73,10 @@ def movie_detail():
             "actors": movie_data["actors"],
             "story": story
         })
+
     except Exception as e:
         print("❌ Error in /api/movie-detail:", str(e))
         return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
-
 
 # =========================== Recommendation ===========================
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from '../components/Loader';
@@ -17,9 +17,10 @@ const MovieDetail = () => {
   const [showTrailer, setShowTrailer] = useState(false);
   const [trailerId, setTrailerId] = useState('');
   const [trailerLoading, setTrailerLoading] = useState(false);
+  const hasSavedHistory = useRef(false); // ✅ persist flag across renders
 
   const handleGoBack = () => {
-    navigate('/dashboard#hero'); // 👈 Scrolls to HeroDashboard on Dashboard
+    navigate('/dashboard#hero');
   };
 
   useEffect(() => {
@@ -32,8 +33,25 @@ const MovieDetail = () => {
         });
 
         const data = await res.json();
-        res.ok ? setMovie(data) : setError(data.error || 'Failed to fetch movie details');
-      } catch {
+
+        if (res.ok) {
+          setMovie(data);
+
+          const userId = localStorage.getItem('userId');
+          if (userId && data?.title && !hasSavedHistory.current) {
+            hasSavedHistory.current = true; // ✅ set true only once
+            await fetch(`${process.env.REACT_APP_NODE_API}/history`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId, title: data.title })
+            });
+          }
+        } else {
+          setError(data?.error || 'Failed to fetch movie details');
+        }
+
+      } catch (err) {
+        console.error("❌ Movie fetch failed:", err);
         setError('Server error while fetching movie');
       } finally {
         setLoading(false);
@@ -85,16 +103,13 @@ const MovieDetail = () => {
   }
 
   const wikipediaUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(movie.title)}`;
-  const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title + ' trailer')}`;
 
   return (
     <div
       className="min-h-screen bg-cover bg-center relative text-white"
       style={{ backgroundImage: `url(${movie.poster_path})` }}
     >
-      {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90 z-0" />
-
       <div className="relative z-10 px-4 py-20 lg:py-28 flex flex-col items-center justify-center min-h-screen text-center">
         <div className="max-w-3xl mx-auto space-y-6">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">{movie.title}</h1>
@@ -136,7 +151,6 @@ const MovieDetail = () => {
         </div>
       </div>
 
-      {/* 🎬 Trailer Modal */}
       {showTrailer && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center px-4">
           <div className="bg-[#111] rounded-lg overflow-hidden shadow-xl w-full max-w-3xl animate-fade-in">
