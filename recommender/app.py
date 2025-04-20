@@ -7,6 +7,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 from urllib.parse import unquote
+from sklearn.metrics.pairwise import cosine_similarity
 import re
 
 app = Flask(__name__)
@@ -18,7 +19,6 @@ MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client['movie_recommender']
 users_collection = db['users']
-history_collection = db['history']  # ✅ new collection
 
 with open('popular.pkl', 'rb') as f:
     popular = pickle.load(f)
@@ -217,6 +217,57 @@ def combined_movie_recommendation(query):
         pass
     return recommendations[:5]
 
+# ✅ User-User Recommendation Route
+@app.route('/api/user-user-recommendations/<user_id>', methods=['GET'])
+def user_user_recommendation_route(user_id):
+    try:
+        recommended = recommend_movies_for_user(user_id)
+        if not recommended:
+            return jsonify({"message": "No recommendations found or invalid user ID."}), 404
+        return jsonify(recommended)
+    except Exception as e:
+        return jsonify({"message": "Internal server error", "details": str(e)}), 500
+
+# ✅ User-User Recommendation Logic
+
+def recommend_movies_for_user(target_user_id, top_n_similar_users=5):
+
+    MONGO_URI = os.getenv("MONGO_URI")
+    client = MongoClient(MONGO_URI)
+    db = client["movie_recommender"]
+    history_collection = db["histories"]
+
+    data = list(history_collection.find())
+    user_user_df = pd.DataFrame(data)
+
+    user_user_df = user_user_df.drop(columns=['_id', 'timestamp', '__v'], errors='ignore')
+
+    user_user_df['user'] = user_user_df['user'].astype(str)
+
+    user_movie_matrix = pd.crosstab(user_user_df['user'], user_user_df['title'])
+    # user_movie_matrix
+
+    user_similarity = cosine_similarity(user_movie_matrix)
+    user_similarity_df = pd.DataFrame(user_similarity, index=user_movie_matrix.index, columns=user_movie_matrix.index)
+    
+    if target_user_id not in user_similarity_df.index:
+        return f"User {target_user_id} not found."
+    
+    # Get similar users
+    similar_users = user_similarity_df[target_user_id].sort_values(ascending=False)[1:top_n_similar_users+1].index
+    
+    # Movies watched by similar users but not by target user
+    target_user_movies = set(user_user_df[user_user_df['user'] == target_user_id]['title'])
+    recommendations = set()
+    
+    for user in similar_users:
+        user_movies = set(user_user_df[user_user_df['user'] == user]['title'])
+        recommendations.update(user_movies - target_user_movies)
+    recommended_movies_df = movienew[movienew['title'].isin(recommendations)].sort_values(by='imdb_rating', ascending=False).head(10)
+    return [
+        {"title": row["title"], "rating": row["imdb_rating"], "image": row["poster_path"]}
+        for _, row in recommended_movies_df.iterrows()
+    ]
 
 # =========================== Run Server ===========================
 
