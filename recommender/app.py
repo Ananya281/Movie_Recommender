@@ -268,21 +268,26 @@ def recommend_movies_for_user(target_user_id, top_n_similar_users=5):
         {"title": row["title"], "rating": row["imdb_rating"], "image": row["poster_path"]}
         for _, row in recommended_movies_df.iterrows()
     ]
-
 @app.route('/api/recommendations/based-on-last/<user_id>', methods=['GET'])
 def recommend_based_on_last(user_id):
     try:
-        print("📥 user_id received:", user_id)
-        recommendations = item_item_similarity(user_id,movienew=movienew, similarity=similarity)
+        recommendations = item_item_similarity(user_id, movienew=movienew, similarity=similarity)
 
         if not recommendations:
-            print("⚠️ No recommendations returned")
             return jsonify([])
-        
-        print("✅ Recommendations found:", recommendations)
+
+        # Get the recent movie title
+        recent_movie = get_last_watched_movie(user_id)
+        if not recent_movie:
+            return jsonify([])
 
         formatted = [
-            {"title": r[0][0], "rating": r[1][0], "image": r[2][0]}
+            {
+                "title": r[0][0],
+                "rating": r[1][0],
+                "image": r[2][0],
+                "sourceTitle": recent_movie  # ✅ add sourceTitle for frontend
+            }
             for r in recommendations
         ]
         return jsonify(formatted)
@@ -290,6 +295,22 @@ def recommend_based_on_last(user_id):
     except Exception as e:
         print("❌ Error in /api/recommendations/based-on-last:", str(e))
         return jsonify({"error": "Server error", "details": str(e)}), 500
+
+
+
+def get_last_watched_movie(user_id):
+    try:
+        data = list(db["histories"].find({"user": ObjectId(user_id)}))
+        df = pd.DataFrame(data)
+        if df.empty:
+            return None
+        df['user'] = df['user'].astype(str)
+        df = df[df['user'] == user_id]
+        df_sorted = df.sort_values(by='timestamp', ascending=False)
+        return df_sorted.iloc[0]['title']
+    except Exception as e:
+        print("❌ Error fetching last watched movie:", str(e))
+        return None
 
 
 def item_item_similarity(user_id,movienew, similarity):
