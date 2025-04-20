@@ -3,13 +3,15 @@ import Sidebar from '../components/Sidebar';
 import HeroDashboard from '../components/HeroDashboard';
 import TopGenreMovies from '../components/TopGenreMovies';
 import YourFavoriteMovies from '../components/YourFavoriteMovies';
+import RecommendedBasedOnLastMovie from '../components/RecommendedBasedOnLastMovie';
+import UserUserRecommendations from '../components/UserUserRecommendations';
 import { useLocation } from 'react-router-dom';
 
 const Dashboard = () => {
   const [userId, setUserId] = useState('');
   const location = useLocation();
 
-  // Fetch userId from localStorage
+  // ✅ Fetch userId from localStorage
   useEffect(() => {
     const storedId = localStorage.getItem('userId');
     if (storedId) {
@@ -17,7 +19,7 @@ const Dashboard = () => {
     }
   }, []);
 
-  // Scroll to Hero if hash is present
+  // ✅ Scroll to Hero section if #hero hash is present in the URL
   useEffect(() => {
     if (location.hash === '#hero') {
       const heroElement = document.getElementById('hero');
@@ -40,16 +42,26 @@ const Dashboard = () => {
           <HeroDashboard />
         </div>
 
-        {/* ❤️ Favorite Movies */}
-        <div className="py-10 mb-[-70px]">
+        {/* ❤️ Your Favorite Movies */}
+        <div className="py-10">
           {userId ? (
             <YourFavoriteMovies userId={userId} />
           ) : (
-            <p className="text-white text-center">Loading user preferences...</p>
+            <p className="text-white text-center">Loading your favorite movies...</p>
           )}
         </div>
 
-        {/* 🎞️ Genre-Based Recommendations */}
+        {/* 🍿 Because You Watched Last Movie */}
+        <div className="py-10">
+          {userId && <RecommendedBasedOnLastMovie userId={userId} />}
+        </div>
+
+        {/* 👥 User-User Collaborative Filtering Recommendations */}
+        <div>
+          {userId && <UserUserRecommendations userId={userId} />}
+        </div>
+
+        {/* 🎞️ Top Genre-Based Recommendations */}
         <div className="py-10">
           <TopGenreMovies />
         </div>

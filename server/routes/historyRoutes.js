@@ -1,8 +1,8 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
 const History = require('../models/History');
 
-// Save movie to history (Prevent duplicates)
 router.post('/', async (req, res) => {
   try {
     const { userId, title } = req.body;
@@ -10,14 +10,17 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: "User ID and title are required" });
     }
 
-    // ✅ Check if the same user already has this movie in history
-    const existing = await History.findOne({ user: userId, title });
+    const objectUserId = new mongoose.Types.ObjectId(userId); // ✅ Fix here
+
+    // Check if already exists
+    const existing = await History.findOne({ user: objectUserId, title });
     if (existing) {
+      console.log("ℹ️ Already exists:", existing);
       return res.status(200).json({ message: "Already in history", history: existing });
     }
 
-    // ✅ If not found, create new history
-    const history = await History.create({ user: userId, title });
+    const history = await History.create({ user: objectUserId, title });
+    console.log("✅ History saved:", history);
     res.status(201).json({ message: "History saved", history });
 
   } catch (err) {

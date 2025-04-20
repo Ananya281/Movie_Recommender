@@ -269,6 +269,81 @@ def recommend_movies_for_user(target_user_id, top_n_similar_users=5):
         for _, row in recommended_movies_df.iterrows()
     ]
 
+@app.route('/api/recommendations/based-on-last/<user_id>', methods=['GET'])
+def recommend_based_on_last(user_id):
+    try:
+        print("📥 user_id received:", user_id)
+        recommendations = item_item_similarity(user_id,movienew=movienew, similarity=similarity)
+
+        if not recommendations:
+            print("⚠️ No recommendations returned")
+            return jsonify([])
+        
+        print("✅ Recommendations found:", recommendations)
+
+        formatted = [
+            {"title": r[0][0], "rating": r[1][0], "image": r[2][0]}
+            for r in recommendations
+        ]
+        return jsonify(formatted)
+
+    except Exception as e:
+        print("❌ Error in /api/recommendations/based-on-last:", str(e))
+        return jsonify({"error": "Server error", "details": str(e)}), 500
+
+
+def item_item_similarity(user_id,movienew, similarity):
+    MONGO_URI = os.getenv("MONGO_URI")
+    client = MongoClient(MONGO_URI)
+    db = client["movie_recommender"]
+    collection = db["histories"]
+
+    data = list(collection.find())
+    item_item_df = pd.DataFrame(data)
+    item_item_df = item_item_df.drop(columns=['id','_v'], errors='ignore')
+    item_item_df['user'] = item_item_df['user'].astype(str)
+    print(user_id)
+
+    user_history = item_item_df[item_item_df['user'] == user_id]
+    if user_history.empty:
+        return []
+
+    user_history_sorted = user_history.sort_values(by='timestamp', ascending=False)
+    recent_movie = user_history_sorted.iloc[0]['title']
+
+    query_normalized = recent_movie.strip().lower()
+    movie_titles_normalized = movienew['title'].str.lower().str.replace(r'\s*\(.*\)', '', regex=True)
+    print("🎬 recent_movie:", recent_movie)
+    print("🔍 query_normalized:", query_normalized)
+    print("🎞️ all movie titles:", movie_titles_normalized.tolist()[:10])  # preview 10
+    movie_matches = movienew[movie_titles_normalized.str.contains(query_normalized, na=False)]
+    print("🎯 Final MATCHED rows:", movie_matches[['title']].values.tolist())
+
+
+    if movie_matches.empty:
+        return []
+
+    recommendations = []
+    for _, row in movie_matches.iterrows():
+        try:
+            movie_index = movienew[movie_titles_normalized == row['title'].lower()].index[0]
+            distances = similarity[movie_index]
+            movies_list = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[1:6]
+            for i in movies_list:
+                movie_info = [
+                    [movienew.iloc[i[0]]['title']],
+                    [movienew.iloc[i[0]]['imdb_rating']],
+                    [movienew.iloc[i[0]]['poster_path']]
+                ]
+                recommendations.append(movie_info)
+        except IndexError:
+            continue
+
+    recommendations.sort(key=lambda x: x[1], reverse=True)
+    return recommendations[:5]
+
+
+
 # =========================== Run Server ===========================
 
 @app.route('/')
